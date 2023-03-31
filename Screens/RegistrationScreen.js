@@ -26,7 +26,7 @@ const initialState = {
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
-const RegistrationScreen = ({ onPress }) => {
+const RegistrationScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [showPassword, setShowPassword] = useState(true);
@@ -53,7 +53,7 @@ const RegistrationScreen = ({ onPress }) => {
     if (!state.email || !state.login || !state.password) {
       return Alert.alert("заполните все поля");
     }
-      
+
     const data = new FormData();
     data.append("file", state.image);
     data.append("login", state.login);
@@ -62,7 +62,6 @@ const RegistrationScreen = ({ onPress }) => {
     console.log(JSON.stringify(data));
     setIsShowKeyboard(false);
     setState(initialState);
-    onPress()
   };
 
   return (
@@ -181,7 +180,7 @@ const RegistrationScreen = ({ onPress }) => {
                 <Pressable style={styles.formBtn} onPress={onSubmitForm}>
                   <Text style={styles.formBtnText}>Зарегистрироваться</Text>
                 </Pressable>
-                <Pressable onPress={onPress}>
+                <Pressable onPress={() => navigation.navigate("Login")}>
                   <Text style={styles.formText}>Уже есть аккаунт? Войти</Text>
                 </Pressable>
               </View>

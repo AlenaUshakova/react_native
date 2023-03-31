@@ -22,7 +22,7 @@ const initialState = {
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
-const LoginScreen = ({ onPress }) => {
+const LoginScreen = ({navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [showPassword, setShowPassword] = useState(true);
@@ -128,7 +128,7 @@ const LoginScreen = ({ onPress }) => {
                 <Pressable style={styles.formBtn} onPress={onSubmitForm}>
                   <Text style={styles.formBtnText}>Войти</Text>
                 </Pressable>
-                <Pressable onPress={onPress}>
+                <Pressable onPress={() => navigation.navigate("Registration")}>
                   <Text style={styles.formText}>
                     Нет аккаунта? Зарегистрироваться
                   </Text>

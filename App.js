@@ -1,21 +1,23 @@
-import {
-  StyleSheet,
-  View,
-} from "react-native";
-
+import { useEffect, useState } from "react";
 import * as Font from "expo-font";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 import RegistrationScreen from "./Screens/RegistrationScreen";
 import LoginScreen from "./Screens/LoginScreen";
-import { useEffect, useState } from "react";
+import { Home } from "./Screens/Home";
 
 const customFonts = {
   "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
   "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
 };
 
+function checkIsLoggedIn() {
+  return true;
+}
+
 export default function App() {
-  const [isLoggedIn, setLoggedIn] = useState(true);
+  const isLoggedIn = checkIsLoggedIn();
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
@@ -31,19 +33,32 @@ export default function App() {
     return null;
   }
 
+  const Stack = createStackNavigator();
+
   return (
-    <View style={styles.container}>
-      {isLoggedIn ? (
-        <RegistrationScreen onPress={() => setLoggedIn(!isLoggedIn)} />
-      ) : (
-        <LoginScreen onPress={() => setLoggedIn(!isLoggedIn)} />
-      )}
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Registration">
+        {!isLoggedIn ? (
+          <>
+            <Stack.Screen
+              name="Registration"
+              component={RegistrationScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+          </>
+        ) : (
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{ headerShown: false }}
+          />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
