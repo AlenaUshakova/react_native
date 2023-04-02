@@ -1,11 +1,8 @@
-import {
-  StyleSheet,
-  Pressable,
-} from "react-native";
+import { StyleSheet, Pressable } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { PostsScreen } from "../Screens/PostsScreen";
-import { CreatePostsScreen } from "../Screens/CreatePostsScreen";
-import { ProfileScreen } from "../Screens/ProfileScreen";
+import { PostsScreen } from "./PostsScreen";
+import { CreatePostsScreen } from "./CreatePostsScreen";
+import { ProfileScreen } from "./ProfileScreen";
 import { Feather } from "@expo/vector-icons";
 import { HeaderBackButton } from "@react-navigation/elements";
 import Icon from "@expo/vector-icons/Feather";
@@ -13,7 +10,6 @@ import Icon from "@expo/vector-icons/Feather";
 const Tab = createBottomTabNavigator();
 
 export const Home = ({ navigation }) => {
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -33,7 +29,6 @@ export const Home = ({ navigation }) => {
           paddingBottom: 20,
           paddingHorizontal: 80,
           height: 70,
-         
         },
         tabBarShowLabel: false,
         tabBarIcon: ({ focused, color }) => {
@@ -72,7 +67,7 @@ export const Home = ({ navigation }) => {
           headerLeft: () => (
             <HeaderBackButton
               backImage={() => (
-                <Icon name="arrow-left" size={24} color="#BDBDBD" />
+                <Icon name="arrow-left" size={24} color="#212121" />
               )}
               onPress={() => navigation.navigate("Posts")}
             />

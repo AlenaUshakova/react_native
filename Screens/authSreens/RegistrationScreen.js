@@ -14,7 +14,7 @@ import {
   ImageBackground,
   Alert,
 } from "react-native";
-import { imageUploader } from "../utils/imageUploader";
+import { imageUploader } from "../../utils/imageUploader";
 
 const initialState = {
   image: "",
@@ -69,7 +69,7 @@ const RegistrationScreen = ({ navigation }) => {
       <TouchableWithoutFeedback onPress={keyboardHide}>
         <ImageBackground
           style={styles.image}
-          source={require("../assets/images/BG_main.jpg")}
+          source={require("../../assets/images/BG_main.jpg")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -94,7 +94,7 @@ const RegistrationScreen = ({ navigation }) => {
                   >
                     {state.image ? (
                       <Image
-                        source={require("../assets/images/add_X.png")}
+                        source={require("../../assets/images/add_X.png")}
                         style={{
                           ...styles.imageAdd,
                           width: 25,
@@ -104,7 +104,7 @@ const RegistrationScreen = ({ navigation }) => {
                       />
                     ) : (
                       <Image
-                        source={require("../assets/images/add.png")}
+                        source={require("../../assets/images/add.png")}
                         style={{ ...styles.imageAdd, width: 25, height: 25 }}
                       />
                     )}

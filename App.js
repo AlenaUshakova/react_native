@@ -3,9 +3,9 @@ import * as Font from "expo-font";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import RegistrationScreen from "./Screens/RegistrationScreen";
-import LoginScreen from "./Screens/LoginScreen";
-import { Home } from "./Screens/Home";
+import RegistrationScreen from "./Screens/authSreens/RegistrationScreen";
+import LoginScreen from "./Screens/authSreens/LoginScreen";
+import { Home } from "./Screens/mainScreen/Home";
 
 const customFonts = {
   "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),

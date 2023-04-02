@@ -124,7 +124,7 @@ export const CreatePostsScreen = ({ navigation, route }) => {
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
         >
-          <View style={styles.form}>
+          <View style={styles.camera}>
             <Camera
               style={styles.containerCamera}
               ref={(ref) => {
@@ -150,60 +150,71 @@ export const CreatePostsScreen = ({ navigation, route }) => {
                 )}
               </Pressable>
             </Camera>
-            <Text style={styles.formTitle}>Загрузите фото</Text>
-            <View style={{ marginBottom: 16 }}>
-              <TextInput
-                style={styles.input}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                value={state.title}
-                placeholder="Название..."
-                placeholderTextColor="#BDBDBD"
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, title: value }))
-                }
-              />
-            </View>
-            <View style={{ marginBottom: 16 }}>
-              <TextInput
-                style={styles.input}
-                onBlur={handleBlur}
-                onFocus={handleFocus}
-                value={state.position}
-                placeholder="Местность..."
-                placeholderTextColor="#BDBDBD"
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, position: value }))
-                }
-              />
-            </View>
-
-            <Pressable
-              style={{
-                ...styles.formBtn,
-                backgroundColor: disabled ? "#F6F6F6" : "#FF6C00",
-              }}
-              onPress={onSubmitForm}
-              disabled={disabled}
-            >
-              <Text
-                style={
-                  disabled
-                    ? { ...styles.formBtnText, color: "#BDBDBD" }
-                    : styles.formBtnText
-                }
-              >
-                Опубликовать
-              </Text>
-            </Pressable>
-            <Pressable
-              style={styles.deleteBtn}
-              onPress={() => setState(initialState)}
-            >
-              <Feather name="trash-2" size={24} color="#BDBDBD" />
-            </Pressable>
+            {state.image ? (
+              <Text style={styles.formTitle}>Фото загружено</Text>
+            ) : (
+              <Text style={styles.formTitle}>Загрузите фото</Text>
+            )}
           </View>
+
+          <View style={{ ...styles.inputContanier, marginBottom: 16 }}>
+            <TextInput
+              style={styles.input}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+              value={state.title}
+              placeholder="Название..."
+              placeholderTextColor="#BDBDBD"
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, title: value }))
+              }
+            />
+          </View>
+          <View style={styles.inputContanier}>
+            <Feather
+              name="map-pin"
+              size={24}
+              color="#BDBDBD"
+              style={{ marginRight: 4 }}
+            />
+            <TextInput
+              style={styles.input}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+              value={state.position}
+              placeholder="Местность..."
+              placeholderTextColor="#BDBDBD"
+              onChangeText={(value) =>
+                setState((prevState) => ({ ...prevState, position: value }))
+              }
+            />
+          </View>
+
+          <Pressable
+            style={{
+              ...styles.formBtn,
+              backgroundColor: disabled ? "#F6F6F6" : "#FF6C00",
+            }}
+            onPress={onSubmitForm}
+            disabled={disabled}
+          >
+            <Text
+              style={
+                disabled
+                  ? { ...styles.formBtnText, color: "#BDBDBD" }
+                  : styles.formBtnText
+              }
+            >
+              Опубликовать
+            </Text>
+          </Pressable>
         </KeyboardAvoidingView>
+        <Pressable
+          style={styles.deleteBtn}
+          onPress={() => setState(initialState)}
+        >
+          <Feather name="trash-2" size={24} color="#BDBDBD" />
+        </Pressable>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -211,14 +222,12 @@ export const CreatePostsScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     backgroundColor: "#ffffff",
     paddingHorizontal: 16,
   },
-  form: {
-    paddingTop: 32,
+  camera: {
+    marginTop: 32,
     alignItems: "center",
-    justifyContent: "space-between",
   },
   formTitle: {
     fontFamily: "Roboto-Regular",
@@ -230,32 +239,41 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     textAlign: "left",
   },
+  inputContanier: {
+    marginBottom: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "transparent",
+    borderBottomColor: "#E8E8E8",
+    height: 50,
+    backgroundColor: "transparent",
+    width: "100%",
+  },
+
   input: {
     fontFamily: "Roboto-Regular",
     fontSize: 16,
     lineHeight: 19,
     color: "#212121",
-    height: 50,
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "transparent",
-    borderBottomColor: "#E8E8E8",
-    width: 343,
+    width: "100%",
   },
   formBtn: {
     padding: 16,
     borderRadius: 100,
-    marginTop: 43,
-    marginBottom: 16,
+    marginTop: 32,
     width: 343,
   },
   deleteBtn: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingRight: 28,
-    paddingLeft: 28,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#F6F6F6",
     borderRadius: 20,
+    marginTop: "auto",
+    width: 70,
+    height: 40,
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   formBtnText: {
     fontFamily: "Roboto-Regular",
@@ -272,21 +290,24 @@ const styles = StyleSheet.create({
     color: "#1B4371",
   },
   containerCamera: {
-    width: 343,
+    width: "100%",
     height: 240,
     backgroundColor: "#F6F6F6",
     borderColor: "#E8E8E8",
     borderWidth: 1,
     borderRadius: 8,
+    overflow: "hidden",
   },
   photo: {
+    borderWidth: 1,
     borderRadius: 8,
     width: 343,
     height: 240,
+    overflow: "hidden",
   },
   addImageBtn: {
     position: "absolute",
-    transform: [{ translateX: 140 }, { translateY: 100 }],
+    transform: [{ translateX: 145 }, { translateY: 90 }],
     padding: 18,
     borderRadius: 50,
   },

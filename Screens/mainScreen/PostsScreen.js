@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { DefaultScreenPosts } from "./DefaultScreenPosts";
-import { CommentsScreen } from "./CommentsScreen";
-import { MapScreen } from "./MapScreen";
+import { DefaultScreenPosts } from "../nestedScreens/DefaultScreenPosts";
+import { CommentsScreen } from "../nestedScreens/CommentsScreen";
+import { MapScreen } from '../nestedScreens/MapScreen';
 import Icon from "@expo/vector-icons/Feather";
 import { StyleSheet, Pressable } from "react-native";
 

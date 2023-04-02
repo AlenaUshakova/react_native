@@ -8,6 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import { EvilIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 
 export const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -17,13 +18,12 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
       setPosts((prevState) => [...prevState, route.params]);
     }
   }, [route.params]);
-    
- 
+
   return (
     <View style={styles.container}>
       <View style={styles.userInfo}>
         <Image
-          source={require("../assets/icon.png")}
+          source={require("../../assets/icon.png")}
           style={{ width: 60, height: 60, borderRadius: 16, marginRight: 8 }}
         />
         <View>
@@ -44,7 +44,7 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
               source={{ uri: item.image }}
               style={{ width: 343, height: 240 }}
             />
-            <Text style={{ marginTop: 8 }}>{item.title}</Text>
+            <Text style={styles.textTitle}>{item.title}</Text>
 
             <View style={styles.userCard}>
               <Pressable
@@ -54,7 +54,12 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
                 <EvilIcons name="comment" size={24} color="#BDBDBD" />
                 <Text style={{ color: "#BDBDBD" }}>0</Text>
               </Pressable>
-              <EvilIcons name="location" size={24} color="#BDBDBD" />
+              <Feather
+                name="map-pin"
+                size={24}
+                color="#BDBDBD"
+                style={{ marginRight: 3 }}
+              />
               <Text
                 style={styles.textLocation}
                 onPress={() =>
@@ -89,6 +94,7 @@ const styles = StyleSheet.create({
   userCard: {
     flexDirection: "row",
     marginTop: 8,
+    alignItems: "center",
   },
   commentInfo: {
     flexDirection: "row",
@@ -102,5 +108,13 @@ const styles = StyleSheet.create({
     textAlign: "right",
     textDecorationLine: "underline",
     color: "#212121",
+  },
+  textTitle: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    lineHeight: 19,
+    textAlign: "left",
+    color: "#212121",
+    marginTop: 8,
   },
 });

@@ -62,7 +62,7 @@ const LoginScreen = ({navigation }) => {
       <TouchableWithoutFeedback onPress={keyboardHide}>
         <ImageBackground
           style={styles.image}
-          source={require("../assets/images/BG_main.jpg")}
+          source={require("../../assets/images/BG_main.jpg")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : "height"}
