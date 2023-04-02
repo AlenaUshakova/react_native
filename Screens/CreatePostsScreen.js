@@ -10,11 +10,13 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
-
 } from "react-native";
-import { imageUploader } from "../utils/imageUploader";
+
 import Icon from "@expo/vector-icons/MaterialIcons";
 import { Feather } from "@expo/vector-icons";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+import * as Location from "expo-location";
 
 const initialState = {
   image: "",
@@ -26,6 +28,37 @@ export const CreatePostsScreen = ({ navigation, route }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [disabled, setDisabled] = useState(true);
+  const [camera, setCamera] = useState(null);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [mainLocation, setMainLocation] = useState({
+    latitude: "",
+    longitude: "",
+  });
+
+  const takePhoto = async () => {
+    if (camera) {
+      const photo = await camera.takePictureAsync();
+      await MediaLibrary.createAssetAsync(photo.uri);
+      let location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+
+      setMainLocation({ latitude, longitude });
+      const url = `http://api.geonames.org/findNearbyPlaceNameJSON?lat=${latitude}&lng=${longitude}&username=alenaushakova`;
+      try {
+        const response = await fetch(url);
+        const result = await response.json();
+
+        const position = `${result.geonames[0].name}, ${result.geonames[0].countryName}`;
+        setState((prevState) => ({ ...prevState, position }));
+      } catch (error) {
+        console.error(error);
+      }
+      setState((prevState) => ({ ...prevState, image: photo.uri }));
+    }
+  };
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -40,13 +73,15 @@ export const CreatePostsScreen = ({ navigation, route }) => {
     setIsShowKeyboard(true);
   };
 
-  const onSubmitForm = (e) => {
+  const onSubmitForm = async (e) => {
     e.preventDefault();
-    const data = new FormData();
-    data.append("image", state.image);
-    data.append("title", state.title);
-    data.append("position", state.position);
-    console.log(JSON.stringify(data));
+    // const data = new FormData();
+    // data.append("image", state.image);
+    // data.append("title", state.title);
+    // data.append("position", state.position);
+    // console.log(JSON.stringify(data));
+
+    navigation.navigate("DefaultScreen", { ...state, ...mainLocation });
     setIsShowKeyboard(false);
     setState(initialState);
     setDisabled(true);
@@ -58,91 +93,119 @@ export const CreatePostsScreen = ({ navigation, route }) => {
     }
   }, [state.image.length, state.title.length, state.position.length]);
 
-  return (
-    <>
-      <TouchableWithoutFeedback onPress={keyboardHide}>
-        <View style={styles.container}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
-          >
-            <View style={styles.form}>
-              <View style={styles.containerForAvatar}>
-                {state.image ? (
-                  <Image style={styles.avatar} source={{ uri: state.image }} />
-                ) : null}
-                <Pressable
-                  style={{
-                    ...styles.addImageBtn,
-                    backgroundColor: state.image
-                      ? "rgba(255, 255, 255, 0.3)"
-                      : "#ffffff",
-                  }}
-                  onPress={() => imageUploader(setState, setIsShowKeyboard)}
-                >
-                  {state.image ? (
-                    <Icon name="photo-camera" size={24} color="#FFFFFF" />
-                  ) : (
-                    <Icon name="photo-camera" size={24} color="#BDBDBD" />
-                  )}
-                </Pressable>
-              </View>
-              <Text style={styles.formTitle}>Загрузите фото</Text>
-              <View style={{ marginBottom: 16 }}>
-                <TextInput
-                  style={styles.input}
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                  value={state.title}
-                  placeholder="Название..."
-                  placeholderTextColor="#BDBDBD"
-                  onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, title: value }))
-                  }
-                />
-              </View>
-              <View style={{ marginBottom: 16 }}>
-                <TextInput
-                  style={styles.input}
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                  value={state.position}
-                  placeholder="Местность..."
-                  placeholderTextColor="#BDBDBD"
-                  onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, position: value }))
-                  }
-                />
-              </View>
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
 
+      setHasPermission(status === "granted");
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+      }
+    })();
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+  return (
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+        >
+          <View style={styles.form}>
+            <Camera
+              style={styles.containerCamera}
+              ref={(ref) => {
+                setCamera(ref);
+              }}
+            >
+              {state.image ? (
+                <Image style={styles.photo} source={{ uri: state.image }} />
+              ) : null}
               <Pressable
                 style={{
-                  ...styles.formBtn,
-                  backgroundColor: disabled ? "#F6F6F6" : "#FF6C00",
+                  ...styles.addImageBtn,
+                  backgroundColor: state.image
+                    ? "rgba(255, 255, 255, 0.3)"
+                    : "#ffffff",
                 }}
-                onPress={onSubmitForm}
-                disabled={disabled}
+                onPress={takePhoto}
               >
-                <Text
-                  style={
-                    disabled
-                      ? { ...styles.formBtnText, color: "#BDBDBD" }
-                      : styles.formBtnText
-                  }
-                >
-                  Опубликовать
-                </Text>
+                {state.image ? (
+                  <Icon name="photo-camera" size={24} color="#FFFFFF" />
+                ) : (
+                  <Icon name="photo-camera" size={24} color="#BDBDBD" />
+                )}
               </Pressable>
-              <Pressable
-                style={styles.deleteBtn}
-                onPress={() => setState(initialState)}
-              >
-                <Feather name="trash-2" size={24} color="#BDBDBD" />
-              </Pressable>
+            </Camera>
+            <Text style={styles.formTitle}>Загрузите фото</Text>
+            <View style={{ marginBottom: 16 }}>
+              <TextInput
+                style={styles.input}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                value={state.title}
+                placeholder="Название..."
+                placeholderTextColor="#BDBDBD"
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, title: value }))
+                }
+              />
             </View>
-          </KeyboardAvoidingView>
-        </View>
-      </TouchableWithoutFeedback>
-    </>
+            <View style={{ marginBottom: 16 }}>
+              <TextInput
+                style={styles.input}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                value={state.position}
+                placeholder="Местность..."
+                placeholderTextColor="#BDBDBD"
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, position: value }))
+                }
+              />
+            </View>
+
+            <Pressable
+              style={{
+                ...styles.formBtn,
+                backgroundColor: disabled ? "#F6F6F6" : "#FF6C00",
+              }}
+              onPress={onSubmitForm}
+              disabled={disabled}
+            >
+              <Text
+                style={
+                  disabled
+                    ? { ...styles.formBtnText, color: "#BDBDBD" }
+                    : styles.formBtnText
+                }
+              >
+                Опубликовать
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.deleteBtn}
+              onPress={() => setState(initialState)}
+            >
+              <Feather name="trash-2" size={24} color="#BDBDBD" />
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 const styles = StyleSheet.create({
@@ -187,7 +250,6 @@ const styles = StyleSheet.create({
     width: 343,
   },
   deleteBtn: {
-    marginTop: 50,
     paddingTop: 10,
     paddingBottom: 10,
     paddingRight: 28,
@@ -209,7 +271,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#1B4371",
   },
-  containerForAvatar: {
+  containerCamera: {
     width: 343,
     height: 240,
     backgroundColor: "#F6F6F6",
@@ -217,17 +279,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
   },
-
+  photo: {
+    borderRadius: 8,
+    width: 343,
+    height: 240,
+  },
   addImageBtn: {
     position: "absolute",
     transform: [{ translateX: 140 }, { translateY: 100 }],
     padding: 18,
     borderRadius: 50,
-  },
-  avatar: {
-    borderRadius: 8,
-    width: 343,
-    height: 240,
   },
   passwordIndicator: {
     position: "absolute",

@@ -14,20 +14,12 @@ const Tab = createBottomTabNavigator();
 
 export const Home = ({ navigation }) => {
 
-  const handleLogout = () => {
-    // navigation.navigate("Login");
-  };
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarItemStyle: {
-          maxWidth: 70,
           width: 70,
           height: 40,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           borderRadius: 20,
         },
         tabBarActiveTintColor: "#FFFFFF",
@@ -36,12 +28,12 @@ export const Home = ({ navigation }) => {
         tabBarInactiveBackgroundColor: "transparent",
         tabBarIconStyle: { strokeWidth: 1 },
         tabBarStyle: {
-          display: "flex",
           height: 83,
-          paddingTop: 9,
-          paddingBottom: 34,
-          paddingHorizontal: 81,
-          alignContent: "center",
+          paddingTop: 10,
+          paddingBottom: 20,
+          paddingHorizontal: 80,
+          height: 70,
+         
         },
         tabBarShowLabel: false,
         tabBarIcon: ({ focused, color }) => {
@@ -64,20 +56,7 @@ export const Home = ({ navigation }) => {
       <Tab.Screen
         name="Posts"
         component={PostsScreen}
-        options={{
-          title: "Публикации",
-          headerTitleAlign: "center",
-          headerStyle: styles.headerBox,
-          headerPressColor: "#FF6C00",
-          headerTitleStyle: styles.headerTitle,
-          headerRightContainerStyle: { paddingRight: 16 },
-          headerLeftContainerStyle: { paddingLeft: 16 },
-          headerRight: () => (
-            <Pressable onPress={handleLogout}>
-              <Icon name="log-out" size={24} color="#BDBDBD" />
-            </Pressable>
-          ),
-        }}
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name="CreatePosts"
