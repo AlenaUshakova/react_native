@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -13,6 +14,7 @@ import {
   ImageBackground,
   Alert,
 } from "react-native";
+import { logIn } from "../../redux/auth/authoperations";
 
 const initialState = {
   email: "",
@@ -22,11 +24,12 @@ const initialState = {
 const deviceHeight = Dimensions.get("window").height;
 const deviceWidth = Dimensions.get("window").width;
 
-const LoginScreen = ({navigation }) => {
+const LoginScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [showPassword, setShowPassword] = useState(true);
   const [isFocused, setIsFocused] = useState("");
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -43,20 +46,16 @@ const LoginScreen = ({navigation }) => {
     setIsFocused(value);
   };
 
-  const onSubmitForm = (e) => {
-    e.preventDefault();
-
+  const onSubmitForm = () => {
     if (!state.email || !state.password) {
       return Alert.alert("заполните все поля");
     }
 
-    const data = new FormData();
-    data.append("email", state.email);
-    data.append("password", state.password);
-    console.log(JSON.stringify(data));
+    dispatch(logIn(state));
     setIsShowKeyboard(false);
     setState(initialState);
   };
+  
   return (
     <>
       <TouchableWithoutFeedback onPress={keyboardHide}>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -11,17 +12,21 @@ import {
   Keyboard,
   Image,
 } from "react-native";
-
 import Icon from "@expo/vector-icons/MaterialIcons";
 import { Feather } from "@expo/vector-icons";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as Location from "expo-location";
+import { addPost } from "../../redux/dashboard/dbOperations";
 
 const initialState = {
   image: "",
   title: "",
   position: "",
+  location: {
+    latitude: "",
+    longitude: "",
+  },
 };
 
 export const CreatePostsScreen = ({ navigation, route }) => {
@@ -30,10 +35,8 @@ export const CreatePostsScreen = ({ navigation, route }) => {
   const [disabled, setDisabled] = useState(true);
   const [camera, setCamera] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
-  const [mainLocation, setMainLocation] = useState({
-    latitude: "",
-    longitude: "",
-  });
+  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.auth.user.uid);
 
   const takePhoto = async () => {
     if (camera) {
@@ -44,8 +47,6 @@ export const CreatePostsScreen = ({ navigation, route }) => {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       };
-
-      setMainLocation({ latitude, longitude });
       const url = `http://api.geonames.org/findNearbyPlaceNameJSON?lat=${latitude}&lng=${longitude}&username=alenaushakova`;
       try {
         const response = await fetch(url);
@@ -56,7 +57,11 @@ export const CreatePostsScreen = ({ navigation, route }) => {
       } catch (error) {
         console.error(error);
       }
-      setState((prevState) => ({ ...prevState, image: photo.uri }));
+      setState((prevState) => ({
+        ...prevState,
+        image: photo.uri,
+        location: { latitude, longitude },
+      }));
     }
   };
 
@@ -73,15 +78,9 @@ export const CreatePostsScreen = ({ navigation, route }) => {
     setIsShowKeyboard(true);
   };
 
-  const onSubmitForm = async (e) => {
-    e.preventDefault();
-    // const data = new FormData();
-    // data.append("image", state.image);
-    // data.append("title", state.title);
-    // data.append("position", state.position);
-    // console.log(JSON.stringify(data));
-
-    navigation.navigate("DefaultScreen", { ...state, ...mainLocation });
+  const onSubmitForm = async () => {
+    dispatch(addPost({ ...state, userId }));
+    navigation.navigate("DefaultScreen");
     setIsShowKeyboard(false);
     setState(initialState);
     setDisabled(true);

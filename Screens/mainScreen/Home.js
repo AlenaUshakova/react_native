@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable } from "react-native";
+import { StyleSheet} from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { PostsScreen } from "./PostsScreen";
 import { CreatePostsScreen } from "./CreatePostsScreen";
@@ -85,6 +85,7 @@ export const Home = ({ navigation }) => {
     </Tab.Navigator>
   );
 };
+
 const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: "Roboto-Medium",

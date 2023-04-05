@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   StyleSheet,
   Image,
@@ -9,75 +10,123 @@ import {
 } from "react-native";
 import { EvilIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
+import { getPosts } from "../../redux/dashboard/dbOperations";
+import firebase from "firebase/compat/app";
 
 export const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
+  const [commentsNum, setCommentsNum] = useState({});
+  const user = useSelector((state) => state.auth.user);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
+    if (setPosts) {
+      dispatch(getPosts(setPosts));
     }
-  }, [route.params]);
+  }, [setPosts]);
+
+  useEffect(() => {
+    if (posts && posts.length > 0) {
+      posts.forEach((post) => {
+        firebase
+          .firestore()
+          .collection("posts")
+          .doc(post.postId)
+          .collection("comments")
+          .onSnapshot((snapshot) => {
+            const allComments = snapshot.docs.map((doc) => ({
+              ...doc.data(),
+              commentId: doc.id,
+            }));
+            setCommentsNum((prevState) => ({
+              ...prevState,
+              [post.postId]: allComments.length,
+            }));
+          });
+      });
+    }
+  }, [posts]);
 
   return (
     <View style={styles.container}>
       <View style={styles.userInfo}>
         <Image
-          source={require("../../assets/icon.png")}
+          source={{ uri: user.avatar }}
           style={{ width: 60, height: 60, borderRadius: 16, marginRight: 8 }}
         />
         <View>
-          <Text>Name</Text>
-          <Text>Email</Text>
+          <Text>{user.name}</Text>
+          <Text>{user.email}</Text>
         </View>
       </View>
-      <FlatList
-        data={posts}
-        keyExtractor={(item, indx) => indx.toString()}
-        renderItem={({ item }) => (
-          <View
-            style={{
-              marginBottom: 32,
-            }}
-          >
-            <Image
-              source={{ uri: item.image }}
-              style={{ width: 343, height: 240 }}
-            />
-            <Text style={styles.textTitle}>{item.title}</Text>
-
-            <View style={styles.userCard}>
-              <Pressable
-                onPress={() => navigation.navigate("Comments")}
-                style={styles.commentInfo}
-              >
-                <EvilIcons name="comment" size={24} color="#BDBDBD" />
-                <Text style={{ color: "#BDBDBD" }}>0</Text>
-              </Pressable>
-              <Feather
-                name="map-pin"
-                size={24}
-                color="#BDBDBD"
-                style={{ marginRight: 3 }}
+      {posts && (
+        <FlatList
+          data={posts}
+          keyExtractor={(item, indx) => indx.toString()}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                marginBottom: 32,
+              }}
+            >
+              <Image
+                source={{ uri: item.image }}
+                style={{ width: 343, height: 240, borderRadius: 8 }}
               />
-              <Text
-                style={styles.textLocation}
-                onPress={() =>
-                  navigation.navigate("Map", {
-                    latitude: item.latitude,
-                    longitude: item.longitude,
-                  })
-                }
-              >
-                {item.position}
-              </Text>
+              <Text style={styles.textTitle}>{item.title}</Text>
+
+              <View style={styles.userCard}>
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("Comments", {
+                      postId: item.postId,
+                      image: item.image,
+                    })
+                  }
+                  style={styles.commentInfo}
+                >
+                  <EvilIcons
+                    name="comment"
+                    size={32}
+                    style={{
+                      color: commentsNum[item.postId] ? "#FF6C00" : "#BDBDBD",
+                    }}
+                  />
+                  <Text
+                    style={{
+                      color: commentsNum[item.postId] ? "#212121" : "#BDBDBD",
+                    }}
+                  >
+                    {commentsNum[item.postId] || 0}
+                  </Text>
+                </Pressable>
+                <Feather
+                  name="map-pin"
+                  size={24}
+                  color="#BDBDBD"
+                  style={{ marginRight: 3 }}
+                />
+                <Text
+                  style={styles.textLocation}
+                  onPress={() =>
+                    navigation.navigate("Map", {
+                      latitude: item.location.latitude,
+                      longitude: item.location.longitude,
+                    })
+                  }
+                >
+                  {item.position}
+                </Text>
+              </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

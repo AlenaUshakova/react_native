@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -15,6 +16,7 @@ import {
   Alert,
 } from "react-native";
 import { imageUploader } from "../../utils/imageUploader";
+import { register } from "../../redux/auth/authoperations";
 
 const initialState = {
   image: "",
@@ -31,6 +33,7 @@ const RegistrationScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [showPassword, setShowPassword] = useState(true);
   const [isFocused, setIsFocused] = useState("");
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -47,19 +50,12 @@ const RegistrationScreen = ({ navigation }) => {
     setIsFocused(value);
   };
 
-  const onSubmitForm = (e) => {
-    e.preventDefault();
-
+  const onSubmitForm = () => {
     if (!state.email || !state.login || !state.password) {
       return Alert.alert("заполните все поля");
     }
-
-    const data = new FormData();
-    data.append("file", state.image);
-    data.append("login", state.login);
-    data.append("email", state.email);
-    data.append("password", state.password);
-    console.log(JSON.stringify(data));
+    
+    dispatch(register(state));
     setIsShowKeyboard(false);
     setState(initialState);
   };

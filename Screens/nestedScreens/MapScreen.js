@@ -4,6 +4,7 @@ import MapView, { Marker } from "react-native-maps";
 
 export const MapScreen = ({ route, navigation }) => {
   const [location, setLocation] = useState({});
+
   useEffect(() => {
     if (route.params) {
       setLocation({
@@ -36,6 +37,7 @@ export const MapScreen = ({ route, navigation }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
