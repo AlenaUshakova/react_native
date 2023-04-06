@@ -1,18 +1,33 @@
-import { StyleSheet} from "react-native";
+import { StyleSheet, Pressable } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { PostsScreen } from "./PostsScreen";
 import { CreatePostsScreen } from "./CreatePostsScreen";
 import { ProfileScreen } from "./ProfileScreen";
 import { Feather } from "@expo/vector-icons";
 import { HeaderBackButton } from "@react-navigation/elements";
 import Icon from "@expo/vector-icons/Feather";
+import { PostsScreen } from "../nestedScreens/PostsScreen";
+import { useDispatch } from "react-redux";
+import { logOut } from "../../redux/auth/authoperations";
+
 
 const Tab = createBottomTabNavigator();
 
 export const Home = ({ navigation }) => {
+    const dispatch = useDispatch();
+
+    const handleLogout = () => {
+      dispatch(logOut());
+    };
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        headerTitleAlign: "center",
+        headerPressColor: "#FF6C00",
+        headerRightContainerStyle: { paddingRight: 16 },
+        headerLeftContainerStyle: { paddingLeft: 16 },
+        headerStyle: styles.headerBox,
+        headerPressColor: "#FF6C00",
+        headerTitleStyle: styles.headerTitle,
         tabBarItemStyle: {
           width: 70,
           height: 40,
@@ -51,19 +66,20 @@ export const Home = ({ navigation }) => {
       <Tab.Screen
         name="Posts"
         component={PostsScreen}
-        options={{ headerShown: false }}
+        options={{
+          title: "Публикации",
+          headerRight: () => (
+            <Pressable onPress={handleLogout}>
+              <Icon name="log-out" size={24} color="#BDBDBD" />
+            </Pressable>
+          ),
+        }}
       />
       <Tab.Screen
         name="CreatePosts"
         component={CreatePostsScreen}
         options={{
           title: "Создать публикацию",
-          headerTitleAlign: "center",
-          headerStyle: styles.headerBox,
-          headerPressColor: "#FF6C00",
-          headerTitleStyle: styles.headerTitle,
-          headerRightContainerStyle: { paddingRight: 16 },
-          headerLeftContainerStyle: { paddingLeft: 16 },
           headerLeft: () => (
             <HeaderBackButton
               backImage={() => (

@@ -13,7 +13,7 @@ import { Feather } from "@expo/vector-icons";
 import { getPosts } from "../../redux/dashboard/dbOperations";
 import firebase from "firebase/compat/app";
 
-export const DefaultScreenPosts = ({ route, navigation }) => {
+export const PostsScreen = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
   const [commentsNum, setCommentsNum] = useState({});
   const user = useSelector((state) => state.auth.user);

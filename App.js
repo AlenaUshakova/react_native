@@ -8,6 +8,9 @@ import { Home } from "./Screens/mainScreen/Home";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "./redux/store";
 import { currentUser } from "./redux/auth/authoperations";
+import { CommentsScreen } from "./Screens/nestedScreens/CommentsScreen";
+import { MapScreen } from "./Screens/nestedScreens/MapScreen";
+import { StyleSheet } from "react-native";
 
 const customFonts = {
   "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
@@ -18,6 +21,7 @@ const Stack = createStackNavigator();
 
 export default () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+
   useEffect(() => {
     async function loadFontsAsync() {
       await Font.loadAsync(customFonts);
@@ -62,14 +66,51 @@ const App = () => {
               />
             </>
           ) : (
-            <Stack.Screen
-              name="Home"
-              component={Home}
-              options={{ headerShown: false }}
-            />
+            <>
+              <Stack.Screen
+                name="Home"
+                component={Home}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Comments"
+                component={CommentsScreen}
+                options={{
+                  headerStyle: styles.headerBox,
+                  headerPressColor: "#FF6C00",
+                  headerTitleStyle: styles.headerTitle,
+                  headerTitleAlign: "center",
+                  title: "Коментарии",
+                }}
+              />
+              <Stack.Screen
+                name="Map"
+                component={MapScreen}
+                options={{
+                  headerStyle: styles.headerBox,
+                  headerPressColor: "#FF6C00",
+                  headerTitleStyle: styles.headerTitle,
+                  headerTitleAlign: "center",
+                  title: "Карта",
+                }}
+              />
+            </>
           )}
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
   );
 };
+const styles = StyleSheet.create({
+  headerTitle: {
+    fontFamily: "Roboto-Medium",
+    fontWeight: 500,
+    fontSize: 17,
+    color: "#212121",
+    letterSpacing: -0.408,
+  },
+  headerBox: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#BDBDBD",
+  },
+});

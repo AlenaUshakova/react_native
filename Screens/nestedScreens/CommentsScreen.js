@@ -6,7 +6,6 @@ import {
   View,
   Image,
   FlatList,
-  SafeAreaView,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   TextInput,
@@ -68,44 +67,50 @@ export const CommentsScreen = ({ route }) => {
 
   return (
     <TouchableWithoutFeedback onPress={handleKeyboard}>
-      <View style={styles.container}>
+      <View style={{ ...styles.container }}>
         <KeyboardAvoidingView
-          keyboardVerticalOffset={40}
           behavior={Platform.OS == "ios" ? "padding" : "height"}
         >
           <View style={styles.imageWrapper}>
             <Image style={styles.postImage} source={{ uri: image }} />
           </View>
-          <View style={styles.dataWrapper}>
-            <SafeAreaView style={styles.postsList}>
-              <FlatList
-                data={comments}
-                renderItem={({ item }) => (
-                  <View style={{ ...styles.commentBox, flexDirection: item.userId === userId ? "row":"row-reverse"}}>
-                    <View style={styles.commentTextWrapper}>
-                      <Text style={styles.commentText}>{item.text}</Text>
-                      <Text style={styles.commentDate}>
-                        {item.date} | {item.time}
-                      </Text>
-                    </View>
-                    <View style={styles.commentAvatar}>
-                      {image ? (
-                        <Image
-                          style={styles.commentAvatar}
-                          source={{ uri: item.avatar }}
-                        />
-                      ) : null}
-                    </View>
+          <View
+            style={{
+              ...styles.postsList,
+              marginBottom: isShowKeyboard ? -250 : 0,
+            }}
+          >
+            <FlatList
+              data={comments}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    ...styles.commentBox,
+                    flexDirection:
+                      item.userId === userId ? "row" : "row-reverse",
+                  }}
+                >
+                  <View style={styles.commentTextWrapper}>
+                    <Text style={styles.commentText}>{item.text}</Text>
+                    <Text style={styles.commentDate}>
+                      {item.date} | {item.time}
+                    </Text>
                   </View>
-                )}
-                keyExtractor={(item) => item.commentId}
-              />
-            </SafeAreaView>
-
+                  <View style={styles.commentAvatar}>
+                    {image ? (
+                      <Image
+                        style={styles.commentAvatar}
+                        source={{ uri: item.avatar }}
+                      />
+                    ) : null}
+                  </View>
+                </View>
+              )}
+              keyExtractor={(item) => item.commentId}
+            />
             <View
               style={{
                 ...styles.commentInputWrapper,
-                marginTop: isShowKeyboard ? 50 : 300,
               }}
             >
               <TextInput
@@ -150,14 +155,12 @@ export const CommentsScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    display: "flex",
-    flexDirection: "column",
     backgroundColor: "#ffffff",
     paddingHorizontal: 16,
     paddingTop: 32,
     paddingBottom: 16,
+    alignItems: "center",
   },
-
   imageWrapper: {
     alignItems: "center",
   },
@@ -174,32 +177,29 @@ const styles = StyleSheet.create({
   },
   commentBox: {
     marginBottom: 24,
-    display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "center",
     gap: 16,
+    width: 343,
   },
   commentTextWrapper: {
     backgroundColor: "rgba(0, 0, 0, 0.03)",
     borderRadius: 6,
     padding: 16,
-    width: 300,
+    width: 290,
   },
   commentText: {
     fontFamily: "Roboto-Regular",
     fontSize: 13,
     color: "#212121",
-
     lineHeight: 18,
   },
   commentDate: {
     fontFamily: "Roboto-Regular",
     fontSize: 10,
     color: "#BDBDBD",
-
     lineHeight: 12,
     textAlign: "right",
   },
-
   commentAvatar: {
     borderRadius: 50,
     width: 28,
@@ -207,9 +207,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#BDBDBD",
   },
   commentInputWrapper: {
-    position: "absolute",
-    marginTop: 300,
-    width: "100%",
+    position: "relative",
+    width: 349,
+    marginTop: 16,
   },
   commentInput: {
     width: "100%",
@@ -248,7 +248,6 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Medium",
     fontSize: 16,
     color: "#212121",
-
     lineHeight: 19,
     textAlign: "center",
   },
